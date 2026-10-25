@@ -12,7 +12,7 @@
 
 ## 적용
 
-이 저장소는 로컬 폴더 마켓플레이스(`claude plugin marketplace add ~/claude-plugins`)로 등록돼 있어 폴더를 직접 읽는다. 수정은 다음 세션이나 `/reload-plugins` 에서 반영된다. 새 플러그인은 `claude plugin install <name>@zzzinho`.
+이 저장소는 로컬 폴더 마켓플레이스(`claude plugin marketplace add ~/dotagents`)로 등록돼 있어 폴더를 직접 읽는다. 수정은 다음 세션이나 `/reload-plugins` 에서 반영된다. 새 플러그인은 `claude plugin install <name>@zzzinho`.
 
 ## 검증
 
