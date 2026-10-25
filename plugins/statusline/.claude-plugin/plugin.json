@@ -1,0 +1,9 @@
+{
+  "name": "statusline",
+  "version": "1.0.0",
+  "description": "세션, 모델, 컨텍스트 바, git 브랜치, rate limit, 비용을 보여주는 2줄 statusline",
+  "author": {
+    "name": "zzzinho"
+  },
+  "license": "MIT"
+}

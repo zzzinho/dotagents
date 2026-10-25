@@ -1,0 +1,9 @@
+{
+  "name": "agents",
+  "version": "1.0.0",
+  "description": "개인용 서브에이전트 모음 (Go, Swift, 디자인 doc, Dockerfile, k8s infra/ops)",
+  "author": {
+    "name": "zzzinho"
+  },
+  "license": "MIT"
+}

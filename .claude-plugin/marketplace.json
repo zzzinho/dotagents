@@ -1,0 +1,28 @@
+{
+  "$schema": "https://anthropic.com/claude-code/marketplace.schema.json",
+  "name": "zzzinho",
+  "description": "개인용 Claude Code 플러그인 모음",
+  "owner": {
+    "name": "zzzinho"
+  },
+  "plugins": [
+    {
+      "name": "statusline",
+      "description": "세션, 모델, 컨텍스트 바, git 브랜치, rate limit, 비용을 보여주는 2줄 statusline",
+      "source": "./plugins/statusline",
+      "category": "productivity"
+    },
+    {
+      "name": "agents",
+      "description": "개인용 서브에이전트 모음 (Go, Swift, 디자인 doc, Dockerfile, k8s infra/ops)",
+      "source": "./plugins/agents",
+      "category": "development"
+    },
+    {
+      "name": "vault",
+      "description": "검증한 사실만 골라 ~/vault 에 마크다운으로 저장·갱신하는 스킬",
+      "source": "./plugins/vault",
+      "category": "productivity"
+    }
+  ]
+}

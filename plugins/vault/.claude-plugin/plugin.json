@@ -1,0 +1,9 @@
+{
+  "name": "vault",
+  "version": "1.0.0",
+  "description": "검증한 사실만 골라 ~/vault 에 마크다운으로 저장·갱신하는 스킬",
+  "author": {
+    "name": "zzzinho"
+  },
+  "license": "MIT"
+}
