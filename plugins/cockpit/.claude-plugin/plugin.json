@@ -1,0 +1,9 @@
+{
+  "name": "cockpit",
+  "version": "1.0.0",
+  "description": "세션, 모델, 컨텍스트 바, git 브랜치, rate limit, 비용, 프롬프트 캐시를 보여주는 3줄 statusline",
+  "author": {
+    "name": "zzzinho"
+  },
+  "license": "MIT"
+}

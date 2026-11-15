@@ -56,6 +56,11 @@ fmt_ctx_size() {
   fi
 }
 
+# Epoch seconds → HH:MM (BSD date, then GNU date)
+fmt_hm() {
+  date -r "$1" '+%H:%M' 2>/dev/null || date -d "@$1" '+%H:%M' 2>/dev/null
+}
+
 # Session name or ID
 session_name=$(echo "$input" | jq -r '.session_name // empty')
 session_id=$(echo "$input" | jq -r '.session_id // empty')
@@ -101,9 +106,19 @@ five_h=$(echo "$input" | jq -r '.rate_limits.five_hour.used_percentage // empty'
 five_h_resets=$(echo "$input" | jq -r '.rate_limits.five_hour.resets_at // empty')
 seven_d=$(echo "$input" | jq -r '.rate_limits.seven_day.used_percentage // empty')
 
+# Prompt cache (warm/caching_observed are booleans, so `// empty` would drop false)
+pc_observed=$(echo "$input" | jq -r '.prompt_cache.caching_observed')
+pc_warm=$(echo "$input" | jq -r '.prompt_cache.warm')
+pc_ttl=$(echo "$input" | jq -r '.prompt_cache.ttl // empty')
+pc_expires=$(echo "$input" | jq -r '.prompt_cache.expires_at // empty')
+pc_hit=$(echo "$input" | jq -r '.prompt_cache.hit_ratio // empty | . * 100 | floor')
+pc_misses=$(echo "$input" | jq -r '.prompt_cache.misses // empty')
+pc_cause=$(echo "$input" | jq -r '.prompt_cache.last_miss_cause.causes // empty | join(",")')
+
 # Build output helpers
 line1=""
 line2=""
+line3=""
 
 append_line1() {
   if [ -z "$line1" ]; then
@@ -118,6 +133,14 @@ append_line2() {
     line2="$1"
   else
     line2="${line2}${SEP}$1"
+  fi
+}
+
+append_line3() {
+  if [ -z "$line3" ]; then
+    line3="$1"
+  else
+    line3="${line3}${SEP}$1"
   fi
 }
 
@@ -189,7 +212,7 @@ if [ -n "$five_h" ]; then
   bar=$(make_block_bar "$five_int" 12)
   reset_label=""
   if [ -n "$five_h_resets" ]; then
-    reset_ts=$(date -r "$five_h_resets" '+%H:%M' 2>/dev/null || date -d "@$five_h_resets" '+%H:%M' 2>/dev/null)
+    reset_ts=$(fmt_hm "$five_h_resets")
     [ -n "$reset_ts" ] && reset_label=" ${DIM}→${reset_ts}${RESET}"
   fi
   append_line2 "$(printf '%b' "${five_icon} ${CYAN}5h${RESET} ${five_color}${bar} ${five_int}%${RESET}${reset_label}")"
@@ -212,11 +235,44 @@ if [ -n "$total_cost" ]; then
   append_line2 "$(printf '%b' "💰 ${CYAN}Cost${RESET} ${YELLOW}\$$(printf '%.2f' "$total_cost")${RESET}")"
 fi
 
-# Output
-if [ -n "$line1" ] && [ -n "$line2" ]; then
-  printf '%b\n%b' "$line1" "$line2"
-elif [ -n "$line1" ]; then
-  printf '%b' "$line1"
-elif [ -n "$line2" ]; then
-  printf '%b' "$line2"
+# --- Line 3: Prompt cache ---
+
+# State: off / warm (TTL, expiry) / cold
+if [ "$pc_observed" = "false" ]; then
+  append_line3 "$(printf '%b' "🧊 ${CYAN}Cache${RESET} ${DIM}off${RESET}")"
+elif [ "$pc_warm" = "true" ]; then
+  expiry=""
+  if [ -n "$pc_expires" ]; then
+    expires_ts=$(fmt_hm "$pc_expires")
+    [ -n "$expires_ts" ] && expiry=" ${DIM}→${expires_ts}${RESET}"
+  fi
+  append_line3 "$(printf '%b' "🧊 ${CYAN}Cache${RESET} ${GREEN}warm${RESET} ${DIM}${pc_ttl}${RESET}${expiry}")"
+elif [ "$pc_warm" = "false" ]; then
+  append_line3 "$(printf '%b' "🧊 ${CYAN}Cache${RESET} ${YELLOW}cold${RESET}")"
 fi
+
+# Hit ratio
+if [ -n "$pc_hit" ]; then
+  if [ "$pc_hit" -ge 80 ]; then
+    hit_color="$GREEN"
+  elif [ "$pc_hit" -ge 50 ]; then
+    hit_color="$YELLOW"
+  else
+    hit_color="$RED"
+  fi
+  append_line3 "$(printf '%b' "🎯 ${CYAN}Hit${RESET} ${hit_color}${pc_hit}%${RESET}")"
+fi
+
+# Misses + last cause
+if [ -n "$pc_misses" ] && [ "$pc_misses" -gt 0 ]; then
+  cause=""
+  [ -n "$pc_cause" ] && cause=" ${DIM}(${pc_cause})${RESET}"
+  append_line3 "$(printf '%b' "⚠️  ${CYAN}Miss${RESET} ${RED}${pc_misses}${RESET}${cause}")"
+fi
+
+# Output: non-empty lines, newline-separated
+out=""
+for l in "$line1" "$line2" "$line3"; do
+  [ -n "$l" ] && out="${out:+${out}\n}${l}"
+done
+printf '%b' "$out"

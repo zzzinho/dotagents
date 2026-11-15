@@ -6,13 +6,13 @@
 
 - `.claude-plugin/marketplace.json` — 마켓플레이스 목록
 - `plugins/<name>/.claude-plugin/plugin.json` — 플러그인 manifest
-- `plugins/statusline/scripts/statusline-command.sh` — `~/.claude/settings.json` 의 `statusLine` 이 이 경로를 직접 실행한다. 옮기거나 이름을 바꾸면 settings 도 같이 고칠 것.
+- `plugins/cockpit/scripts/statusline-command.sh` — `~/.claude/settings.json` 의 `statusLine` 이 이 경로를 직접 실행한다. 옮기거나 이름을 바꾸면 settings 도 같이 고칠 것.
 - `plugins/agents/agents/*.md` — 서브에이전트. `agents:<name>` 으로 로드된다. `~/.claude/agents` 는 쓰지 않는다.
 - `plugins/vault/skills/vault/SKILL.md` — `vault:vault` 스킬. `~/.claude/skills` 에는 claude.ai 동기화 스킬(`synced/`)만 둔다.
 
 ## 적용
 
-이 저장소는 로컬 폴더 마켓플레이스(`claude plugin marketplace add ~/dotagents`)로 등록돼 있어 폴더를 직접 읽는다. 수정은 다음 세션이나 `/reload-plugins` 에서 반영된다. 새 플러그인은 `claude plugin install <name>@zzzinho`.
+이 저장소는 로컬 폴더 마켓플레이스(`claude plugin marketplace add ~/code/dotagents`)로 등록돼 있어 폴더를 직접 읽는다. 수정은 다음 세션이나 `/reload-plugins` 에서 반영된다. 새 플러그인은 `claude plugin install <name>@zzzinho`.
 
 ## 검증
 

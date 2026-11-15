@@ -7,9 +7,9 @@
   },
   "plugins": [
     {
-      "name": "statusline",
-      "description": "세션, 모델, 컨텍스트 바, git 브랜치, rate limit, 비용을 보여주는 2줄 statusline",
-      "source": "./plugins/statusline",
+      "name": "cockpit",
+      "description": "세션, 모델, 컨텍스트 바, git 브랜치, rate limit, 비용, 프롬프트 캐시를 보여주는 3줄 statusline",
+      "source": "./plugins/cockpit",
       "category": "productivity"
     },
     {
