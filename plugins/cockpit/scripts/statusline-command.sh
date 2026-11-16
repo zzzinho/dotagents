@@ -14,24 +14,22 @@ DIM='\033[2m'
 # Separator (spaces only, no pipe)
 SEP="  "
 
-# Thick block bar: ▰▰▰▱▱▱▱ style
+# Seamless line bar: colored fill on a dim track (━━━━━━━━━━)
+# $1: percent, $2: width, $3: fill color
 make_block_bar() {
-  pct=$1
-  width=${2:-20}
-  filled=$(( pct * width / 100 ))
-  empty=$(( width - filled ))
-  bar=""
+  filled=$(( $1 * $2 / 100 ))
+  fill=""
+  track=""
   i=0
   while [ $i -lt $filled ]; do
-    bar="${bar}▰"
+    fill="${fill}━"
     i=$(( i + 1 ))
   done
-  i=0
-  while [ $i -lt $empty ]; do
-    bar="${bar}▱"
+  while [ $i -lt $2 ]; do
+    track="${track}━"
     i=$(( i + 1 ))
   done
-  printf '%s' "$bar"
+  printf '%s' "$3${fill}${RESET}${DIM}${track}${RESET}"
 }
 
 # Format tokens always as K (50000 → 50K, 1000000 → 1000K)
@@ -171,12 +169,12 @@ if [ -n "$used_pct" ]; then
   else
     ctx_color="$GREEN"
   fi
-  bar=$(make_block_bar "$used_int" 20)
+  bar=$(make_block_bar "$used_int" 20 "$ctx_color")
   if [ -n "$ctx_used" ] && [ -n "$ctx_max" ]; then
     used_label="$(fmt_k "$ctx_used")/$(fmt_k "$ctx_max")"
-    append_line1 "$(printf '%b' "${ctx_color}${bar}${RESET} ${DIM}${used_label} (${used_int}%)${RESET}")"
+    append_line1 "$(printf '%b' "${bar} ${DIM}${used_label} (${used_int}%)${RESET}")"
   else
-    append_line1 "$(printf '%b' "${ctx_color}${bar}${RESET} ${DIM}${used_int}%${RESET}")"
+    append_line1 "$(printf '%b' "${bar} ${DIM}${used_int}%${RESET}")"
   fi
 fi
 
@@ -209,13 +207,13 @@ if [ -n "$five_h" ]; then
   else
     five_color="$GREEN"; five_icon="🔋"
   fi
-  bar=$(make_block_bar "$five_int" 12)
+  bar=$(make_block_bar "$five_int" 12 "$five_color")
   reset_label=""
   if [ -n "$five_h_resets" ]; then
     reset_ts=$(fmt_hm "$five_h_resets")
     [ -n "$reset_ts" ] && reset_label=" ${DIM}→${reset_ts}${RESET}"
   fi
-  append_line2 "$(printf '%b' "${five_icon} ${CYAN}5h${RESET} ${five_color}${bar} ${five_int}%${RESET}${reset_label}")"
+  append_line2 "$(printf '%b' "${five_icon} ${CYAN}5h${RESET} ${bar} ${five_color}${five_int}%${RESET}${reset_label}")"
 fi
 if [ -n "$seven_d" ]; then
   seven_int=$(printf '%.0f' "$seven_d")
@@ -226,8 +224,8 @@ if [ -n "$seven_d" ]; then
   else
     seven_color="$GREEN"
   fi
-  bar=$(make_block_bar "$seven_int" 12)
-  append_line2 "$(printf '%b' "🗓️  ${CYAN}7d${RESET} ${seven_color}${bar} ${seven_int}%${RESET}")"
+  bar=$(make_block_bar "$seven_int" 12 "$seven_color")
+  append_line2 "$(printf '%b' "🗓️  ${CYAN}7d${RESET} ${bar} ${seven_color}${seven_int}%${RESET}")"
 fi
 
 # Cost
